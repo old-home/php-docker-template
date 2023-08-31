@@ -53,4 +53,3 @@ RUN chmod +x /usr/local/bin/entrypoint.sh \
 
 WORKDIR /app
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
