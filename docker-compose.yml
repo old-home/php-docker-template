@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  php:
+    build: ./docker/php
+    environment:
+      LOCAL_UID: ${UID}
+      LOCAL_GID: ${UID}
+    volumes:
+      - .:/app
+  phpdoc:
+    image: phpdoc/phpdoc:3
+    volumes:
+      - .:/data

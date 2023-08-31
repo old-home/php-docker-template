@@ -1,0 +1,10 @@
+/file.template.settings.xmlbuild/
+/vendor/
+/tools/
+/.idea/*
+!/.idea/php.xml
+!/.idea/file.template.settings.xml
+!/.idea/fileTemplates/
+/.psalm/cache/
+!/.psalm/cache/.gitkeep
+/.phpunit.cache
