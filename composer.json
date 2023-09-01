@@ -12,14 +12,14 @@
     "minimum-stability": "stable",
     "config": {
         "platform": {
-            "php": "^8.2",
-            "ext-ast": "*",
-            "ext-ctype": "*",
-            "ext-iconv": "*",
-            "ext-json": "*",
-            "ext-mbstring": "*",
-            "ext-simplexml": "*",
-            "ext-xml": "*"
+            "php": "8.2",
+            "ext-ast": "8.2",
+            "ext-ctype": "8.2",
+            "ext-iconv": "8.2",
+            "ext-json": "8.2",
+            "ext-mbstring": "8.2",
+            "ext-simplexml": "8.2",
+            "ext-xml": "8.2"
         }
     },
     "require": {
