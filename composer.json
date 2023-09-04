@@ -13,7 +13,6 @@
     "config": {
         "platform": {
             "php": "8.2",
-            "ext-ast": "8.2",
             "ext-ctype": "8.2",
             "ext-iconv": "8.2",
             "ext-json": "8.2",
@@ -26,7 +25,6 @@
     },
     "require-dev": {
         "vimeo/psalm": "^5.15",
-        "phan/phan": "^5.4",
         "phpstan/phpstan": "^1.10",
         "phpunit/phpunit": "^10.3"
     },
@@ -53,11 +51,9 @@
         "test:units": "phpunit --testsuite units",
         "test:features": "phpunit --testsuite features",
         "lint": [
-            "@lint:phan",
             "@lint:phpstan",
             "@lint:psalm"
         ],
-        "lint:phan": "phan",
         "lint:phpstan": "phpstan",
         "lint:psalm": "psalm"
     }
