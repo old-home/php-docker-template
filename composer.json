@@ -52,6 +52,7 @@
         ],
         "test:units": "phpunit --testsuite units",
         "test:features": "phpunit --testsuite features",
+        "test:coverage": "phpunit --testsuite units --coverage-html=coverage",
         "lint": [
             "@lint:phan",
             "@lint:phpstan",
