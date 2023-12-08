@@ -22,7 +22,10 @@ if (!function_exists('toUpperCamel')) {
         return implode('', $ucArray);
     }
 }
-const COMPOSER_JSON = 'composer.json';
+
+if (!defined('COMPOSER_JSON' = 'composer.json')) {
+    define('COMPOSER_JSON', 'composer.json');
+}
 
 echo 'Enter package name(user_name/project_name): ' . "\n";
 

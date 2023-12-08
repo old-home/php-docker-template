@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   php:
-    build: ./docker/php
+    image: ghcr.io/old-home/php:latest
     environment:
       LOCAL_UID: ${UID}
       LOCAL_GID: ${UID}
