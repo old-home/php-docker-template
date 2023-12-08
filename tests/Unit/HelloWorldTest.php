@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Graywings\PhpDockerTemplate\Tests\Units;
+namespace Graywings\PhpDockerTemplate\Tests\Unit;
 
 use Graywings\PhpDockerTemplate\HelloWorld;
 use PHPUnit\Framework\TestCase;
