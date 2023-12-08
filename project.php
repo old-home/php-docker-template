@@ -2,99 +2,214 @@
 
 declare(strict_types=1);
 
-/**
- * Copyright ©2023 Graywings. All rights reserved.
- *
- * PHP version >= 8.3.0
- *
- * @author   Taira Terashima <taira.terashima@gmail.com>
- * @license  MIT https://opensource.org/licenses/MIT
- * @link     https://github.com/old-home/php-docker-template
- */
+use Dotenv\Dotenv;
+use Graywings\PhpDockerTemplate\Composer\Setting\Author;
+use Graywings\PhpDockerTemplate\Composer\Setting\PackageName;
+use Graywings\PhpDockerTemplate\Composer\Setting\PackageType;
+use Graywings\PhpDockerTemplate\Composer\Setting\Setting;
+use Graywings\PhpDockerTemplate\Composer\Setting\SoftwareLicense;
+use Graywings\PhpDockerTemplate\Version\SemVer\StabilityType;
 
-if (!function_exists('toUpperCamel')) {
-    function toUpperCamel(string $value): string
+require_once 'vendor/autoload.php';
+
+if (!function_exists('main')) {
+    function main(): void
     {
-        $array = explode('-', $value);
-        $ucArray = array_map(function (string $word): string {
-            return ucwords($word);
-        }, $array);
-        return implode('', $ucArray);
-    }
-}
-const COMPOSER_JSON = 'composer.json';
-
-echo 'Enter package name(user_name/project_name): ' . "\n";
-
-$packageName = fgets(STDIN);
-
-if ($packageName) {
-    $packageName = trim($packageName);
-    $parsedPackage = explode('/', $packageName);
-    if (count($parsedPackage) !== 2) {
-        echo "Failed.\n";
-        require __FILE__;
-        exit;
-    }
-} else {
-    echo "Failed.\n";
-    require __FILE__;
-    exit;
-}
-
-$upperCamelUserName = toUpperCamel($parsedPackage[0]);
-$upperCamelProjectName = toUpperCamel($parsedPackage[1]);
-$namespaceName = $upperCamelUserName . '\\\\' . $upperCamelProjectName;
-
-echo "Settings...\n";
-echo 'Package name: ' . $packageName . "\n";
-echo 'namespace: ' . $namespaceName . "\n";
-
-$srcFiles = scandir('src/');
-$testFiles = scandir('tests/');
-
-$files = [
-    COMPOSER_JSON
-];
-
-foreach ($files as $file) {
-    $contents = file($file);
-    if (!$contents) {
-        echo "Failed read composer.json\n";
-        echo "Check composer.json and its permission and execute command:\n";
-        echo "\n";
-        echo "make project\n";
-        exit;
-    }
-
-    $fp = fopen($file, 'w');
-    if (!$fp) {
-        echo "Failed opening composer.json\n";
-        echo "Check composer.json and its permission and execute command:\n";
-        echo "\n";
-        echo "make project\n";
-        exit;
-    }
-    /**
-     * @var array<string, string> $replaceArray
-     */
-    $replaceArray = [
-        'graywings/php-docker-template' => $packageName,
-        'Graywings\\\\PhpDockerTemplate' => $namespaceName
-    ];
-
-    $newCompsoerJson = '';
-    foreach ($contents as $line) {
-        foreach ($replaceArray as $target => $replace) {
-            $line = str_replace($target, $replace, $line);
+        try {
+            if (file_exists(__DIR__ . '/.env')) {
+                $dotenv = Dotenv::createImmutable(__DIR__);
+                $dotenv->load();
+            }
+            $packageName = readPackageName();
+            $description = readInput('Description []:');
+            $author = readAuthor();
+            $minimumStability = readMinimumStability();
+            $packageType = readPackageType();
+            $license = readLicense();
+            $keywords = readKeywords();
+            buildGitRepository($author, $packageName);
+            buildPackagistRepository($packageName);
+            buildComposerJson(
+                $packageName,
+                $description,
+                $author,
+                $minimumStability,
+                $packageType,
+                $license,
+                $keywords
+            );
+            system('composer dump-autoload');
+//            unlink(__FILE__);
+        } catch (RuntimeException $e) {
+            echo $e->getMessage();
+            require __FILE__;
+            return;
+        } catch (LogicException $e) {
+            echo $e->getMessage() . "\n";
+            echo 'Project init failed...' . "\n";
+            echo 'Please execute command:' . "\n";
+            echo 'make project' . "\n";
+            exit;
         }
-        $newCompsoerJson .= $line;
     }
-
-    fwrite($fp, $newCompsoerJson, strlen($newCompsoerJson));
-    fclose($fp);
 }
 
-system('composer dump-autoload');
+if (!function_exists('readInput')) {
+    function readInput(string $prompt): string
+    {
+        echo $prompt . "\n";
+        $input = fgets(STDIN);
+        if ($input === false) {
+            throw new LogicException('Can\'t read STDIN.');
+        }
+        return trim($input);
+    }
+}
 
-unlink(__FILE__);
+if (!function_exists('readPackageName')) {
+    function readPackageName(): PackageName
+    {
+        $packageName = readInput('Package name (<vendor>/<name>) [] : ');
+        try {
+            return new PackageName($packageName);
+        } catch (RuntimeException $e) {
+            echo $e->getMessage() . "\n";
+            return readPackageName();
+        }
+    }
+}
+
+if (!function_exists('readAuthor')) {
+    function readAuthor(): Author
+    {
+        $userName = readInput('Author name:');
+        $email = readInput('Author e-mail address:');
+        return new Author($userName, $email);
+    }
+}
+
+if (!function_exists('readMinimumStability')) {
+    function readMinimumStability(): StabilityType
+    {
+        $minimumStability = readInput('Minimum Stability []:');
+        try {
+            return StabilityType::from($minimumStability);
+        } catch (ValueError) {
+            echo 'Not supported this stability: ' . $minimumStability . "\n";
+            echo "\n";
+            return readMinimumStability();
+        }
+    }
+}
+
+if (!function_exists('readLicense')) {
+    function readLicense(): SoftwareLicense
+    {
+        $license = readInput('License []:');
+        return SoftwareLicense::from($license);
+    }
+}
+
+if (!function_exists('readKeywords')) {
+    function readKeywords(): array
+    {
+        $keywords = [];
+        foreach (explode(',', readInput('Keywords (comma separated keywords) []:')) as $keyword) {
+            $keywords[] = $keyword;
+        }
+        return $keywords;
+    }
+}
+
+if (!function_exists('readPackageType')) {
+    function readPackageType(): PackageType
+    {
+        $packageTypeString = readInput('Package type (e.g. library, project, metapackage, composer-plugin) []:');
+        try {
+            return PackageType::from($packageTypeString);
+        } catch (ValueError) {
+            echo 'Not supported this package type: ' . $packageTypeString . "\n";
+            echo "\n";
+            return readPackageType();
+        }
+    }
+}
+
+if (!function_exists('buildGitRepository')) {
+    function buildGitRepository(Author $author, PackageName $packageName): void
+    {
+        $token = $_ENV['GITHUB_TOKEN'];
+        $organizationOrUser = $_ENV['GITHUB_ORGANIZATION_OR_USER'];
+        $repositoryName = $packageName->packageName;
+        $userName = $author->userName;
+        $email = $author->email;
+        system("git config --global user.name '$userName'");
+        system("git config --global user.email '$email'");
+        system('git config --global init.defaultBranch main');
+        system('git init');
+        system('git add .');
+        system('git commit -m "Initial commit"');
+
+        system(<<<EOF
+curl -L \
+  -X POST \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer $token" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  https://api.github.com/orgs/$organizationOrUser/repos \
+  -d '{"name":"$repositoryName"}'
+EOF
+        );
+        system("git remote add origin git@github.com:$organizationOrUser/$repositoryName");
+        system("git push origin main");
+    }
+}
+
+if (!function_exists('buildPackagistRepository')) {
+    function buildPackagistRepository(PackageName $packageName): void
+    {
+        $user = $_ENV['PACKAGIST_USER'];
+        $token = $_ENV['PACKAGIST_TOKEN'];
+        $organizationOrUser = $_ENV['GITHUB_ORGANIZATION_OR_USER'];
+        $repositoryName = $packageName->packageName;
+        system(<<<EOF
+curl -X POST \
+    'https://packagist.org/api/create-package?username=$user&apiToken=$token' \
+    -d '{"repository":{"url":"https://github.com/$organizationOrUser/$repositoryName"}}'
+EOF
+        );
+    }
+}
+
+if (!function_exists('buildComposerJson')) {
+    function buildComposerJson(
+        PackageName     $packageName,
+        string          $description,
+        Author          $author,
+        StabilityType   $minimumStability,
+        PackageType     $packageType,
+        SoftwareLicense $license,
+        array           $keywords
+    ): void
+    {
+        $setting = new Setting(
+            $packageName,
+            $description,
+            $packageType,
+            $license,
+            $keywords,
+            '',
+            '',
+            '',
+            [$author],
+            [],
+            [],
+            [],
+            [],
+            $minimumStability
+        );
+        echo json_encode($setting->jsonSerialize(), JSON_PRETTY_PRINT);
+    }
+}
+
+main();
