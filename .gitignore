@@ -1,6 +1,8 @@
 /file.template.settings.xmlbuild/
 /vendor/
 /tools/
+/build/
+/coverage/
 /.idea/*
 !/.idea/php.xml
 !/.idea/file.template.settings.xml
