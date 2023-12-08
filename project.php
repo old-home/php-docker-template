@@ -23,7 +23,7 @@ if (!function_exists('toUpperCamel')) {
     }
 }
 
-if (!defined('COMPOSER_JSON' = 'composer.json')) {
+if (!defined('COMPOSER_JSON')) {
     define('COMPOSER_JSON', 'composer.json');
 }
 
