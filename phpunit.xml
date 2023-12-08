@@ -8,13 +8,14 @@
          beStrictAboutCoverageMetadata="true"
          beStrictAboutOutputDuringTests="true"
          failOnRisky="true"
-         failOnWarning="true">
+         failOnWarning="true"
+         displayDetailsOnTestsThatTriggerWarnings="true">
     <testsuites>
         <testsuite name="units">
-            <directory>tests/units</directory>
+            <directory>tests/Unit</directory>
         </testsuite>
         <testsuite name="features">
-            <directory>tests/features</directory>
+            <directory>tests/Feature</directory>
         </testsuite>
     </testsuites>
 
