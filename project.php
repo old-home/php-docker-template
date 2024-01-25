@@ -44,7 +44,7 @@ if (!function_exists('main')) {
             unlink(__FILE__);
             commitAndPush();
             buildPackagistRepository($packageName);
-            setGitHubWebhook();
+            setGitHubWebhook($packageName);
             system('composer dump-autoload');
         } catch (RuntimeException $e) {
             echo $e->getMessage();
