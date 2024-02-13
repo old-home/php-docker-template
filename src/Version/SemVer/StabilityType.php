@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Copyright ©2023 Graywings. All rights reserved.
  *
@@ -14,6 +12,8 @@ declare(strict_types=1);
  * @link     https://github.com/old-home/php-docker-template
  */
 
+declare(strict_types=1);
+
 namespace Graywings\PhpDockerTemplate\Version\SemVer;
 
 use DomainException;
@@ -24,14 +24,15 @@ use Override;
 /**
  * Stability type
  *
- * @category Graywings\PhpDockerTemplate\Temp\Composer
- * @package  Graywings\PhpDockerTemplate\Temp\Composer
- * @author   Taira Terashima <taira.terashima@gmail.com>
- * @license  MIT https://opensource.org/licenses/MIT
- * @link     https://github.com/old-home/php-docker-template
+ * @category   Graywings\PhpDockerTemplate\Temp\Composer
+ * @package    Graywings\PhpDockerTemplate\Temp\Composer
+ * @author     Taira Terashima <taira.terashima@gmail.com>
+ * @license    MIT https://opensource.org/licenses/MIT
+ * @link       https://github.com/old-home/php-docker-template
+ * @implements IComparable<StabilityType>
  */
-enum StabilityType: string
-    implements IComparable
+
+enum StabilityType: string implements IComparable
 {
     case DEV = 'dev';
     case ALPHA = 'alpha';
@@ -57,7 +58,9 @@ enum StabilityType: string
             'RC' => self::RELEASE_CANDIDATE,
             '', 'stable' => self::STABLE,
             'patch', 'pl', 'p' => self::PATCH,
-            default => throw new DomainException('Stability ' . $stabilityType . ' is not supported.')
+            default => throw new DomainException(
+                'Stability ' . $stabilityType . ' is not supported.'
+            )
         };
     }
 
@@ -84,15 +87,20 @@ enum StabilityType: string
      * @param self $other The object to compare with.
      *
      * @return int Returns a negative integer, zero, or a positive integer depending
-     *             on whether the current object is less than, equal to, or greater than
+     *             on whether the current object is
+     *             less than, equal to, or greater than
      *             the specified object.
-     * @throws InvalidArgumentException If the specified object is not an instance of self.
+     * @throws InvalidArgumentException If the specified object is not
+     *             an instance of self.
      */
     #[Override]
     public function compare(IComparable $other): int
     {
         if (!$other instanceof self) {
-            throw new InvalidArgumentException('Compared object ' . get_class($other) . ' is not ' . self::class . '.');
+            throw new InvalidArgumentException(
+                'Compared object ' . get_class($other)
+                . ' is not ' . self::class . '.'
+            );
         }
         return $this->order() <=> $other->order();
     }

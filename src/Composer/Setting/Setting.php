@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Copyright ©2023 Graywings. All rights reserved.
  *
@@ -14,11 +12,14 @@ declare(strict_types=1);
  * @link     https://github.com/old-home/php-docker-template
  */
 
+declare(strict_types=1);
+
 namespace Graywings\PhpDockerTemplate\Composer\Setting;
 
 use Graywings\Etter\Etter;
 use Graywings\Etter\Get;
 use Graywings\PhpDockerTemplate\Version\SemVer\StabilityType;
+use Graywings\PhpDockerTemplate\Version\SemVer\Version;
 use JsonSerializable;
 use Override;
 
@@ -33,15 +34,16 @@ use Override;
  *
  * @property-read PackageName $name
  * @property-read string $description
+ * @property-read Version $version
  * @property-read PackageType $type
  * @property-read string[] $keywords
  * @property-read string $homepage
  * @property-read string $readme
  * @property-read string $time
+ * @property-read SoftwareLicense $license
  * @property-read Author[] $authors
  * @property-read Fund[] $funding
  * @property-read RequirePackage[] $require
- * @property-read RequirePackage[] $requireDev
  * @property-read AutoloadMap[] $autoload
  * @property-read StabilityType $minimumStability
  */
@@ -50,40 +52,56 @@ readonly class Setting implements JsonSerializable
     use Etter;
 
     /**
+     * Setting constructor
+     *
      * @param PackageName $name
      * @param string $description
-     * @param PackageType $type
-     * @param SoftwareLicense $license
+     * @param RequirePackage[] $require
+     * @param ?Version $version
+     * @param ?PackageType $type
+     * @param ?SoftwareLicense $license
      * @param string[] $keywords
      * @param string $homepage
      * @param string $readme
      * @param string $time
      * @param Author[] $authors
      * @param Fund[] $funding
-     * @param RequirePackage[] $require
-     * @param RequirePackage[] $requireDev
      * @param AutoloadMap[] $autoload
-     * @param StabilityType $minimumStability
+     * @param ?StabilityType $minimumStability
+     * @param Support|null $support
+     * @param bool $preferStable
+     * @param string[] $repositories
+     * @param bool $abandoned
+     * @param string[] $nonFeatureBranches
      */
     public function __construct(
-        #[Get] private PackageName     $name,
-        #[Get] private string          $description,
-        #[Get] private PackageType     $type,
-        #[Get] private SoftwareLicense $license,
-        #[Get] private array           $keywords,
-        #[Get] private string          $homepage,
-        #[Get] private string          $readme,
-        #[Get] private string          $time,
-        #[Get] private array           $authors,
-        #[Get] private array           $funding,
-        #[Get] private array           $require,
-        #[Get] private array           $requireDev,
-        #[Get] private array           $autoload,
-        #[Get] private StabilityType   $minimumStability
-    )
-    {
+        #[Get] private PackageName      $name,
+        #[Get] private string           $description,
+        #[Get] private array            $require,
+        #[Get] private ?Version         $version = null,
+        #[Get] private ?PackageType     $type = null,
+        #[Get] private ?SoftwareLicense $license = null,
+        #[Get] private array            $keywords = [],
+        #[Get] private string           $homepage = '',
+        #[Get] private string           $readme = '',
+        #[Get] private string           $time = '',
+        #[Get] private array            $authors = [],
+        #[Get] private array            $funding = [],
+        #[Get] private array            $autoload = [],
+        #[Get] private ?StabilityType   $minimumStability = null,
+        #[Get] private ?Support         $support = null,
+        #[Get] private bool             $preferStable = true,
+        #[Get] private array            $repositories = [],
+        #[Get] private bool             $abandoned = false,
+        #[Get] private array            $nonFeatureBranches = []
+    ) {
     }
 
+    /**
+     * JSON serialize
+     *
+     * @return array<string, mixed>
+     */
     #[Override]
     public function jsonSerialize(): array
     {
@@ -91,7 +109,7 @@ readonly class Setting implements JsonSerializable
         foreach ($this->authors as $author) {
             $authors[] = [
                 'name' => $author->userName,
-                'email' => $author->email
+                'email' => $author->email,
             ];
         }
         return [
@@ -111,18 +129,18 @@ readonly class Setting implements JsonSerializable
                     'ext-mbstring' => '8.3',
                     'ext-simplexml' => '8.3',
                     'ext-xml' => '8.3'
-                ]
+                ],
             ],
             'autoload' => [
                 'psr-4' => [
-                    $this->name->namespaceName() . '\\' => 'src/'
-                ]
+                    $this->name->namespaceName() . '\\' => 'src/',
+                ],
             ],
             'autoload-dev' => [
                 'psr-4' => [
                     $this->name->namespaceName() . '\\Tests\\Unit\\' => 'tests/Unit',
-                    $this->name->namespaceName() . '\\Tests\\Feature\\' => 'tests/Feature'
-                ]
+                    $this->name->namespaceName() . '\\Tests\\Feature\\' => 'tests/Feature',
+                ],
             ],
             'scripts' => [
                 'build' => [
@@ -130,10 +148,10 @@ readonly class Setting implements JsonSerializable
                 ],
                 'test' => [
                     '@test:units',
-                    '@test:feature'
+                    '@test:feature',
                 ],
                 'test:units' => 'phpunit --testsuite units --coverage-html=coverage',
-                'test:features' => 'phpunit --testsuite features'
+                'test:features' => 'phpunit --testsuite features',
             ]
         ];
     }

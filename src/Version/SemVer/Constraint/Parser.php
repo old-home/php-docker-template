@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Copyright ©2024 Graywings. All rights reserved.
  *
@@ -14,10 +12,11 @@ declare(strict_types=1);
  * @link     https://github.com/old-home/php-docker-template
  */
 
+declare(strict_types=1);
+
 namespace Graywings\PhpDockerTemplate\Version\SemVer\Constraint;
 
 use RuntimeException;
-use function PHPUnit\Framework\matches;
 
 /**
  * Version constraint parser
@@ -30,17 +29,27 @@ use function PHPUnit\Framework\matches;
  */
 class Parser
 {
-    const string REG_CONSTRAINT_FIRST_CHAR = '/^[~=^]$/';
-    const string REG_THAN_CHAR = '/^[<>]$/';
+    private const string REG_CONSTRAINT_FIRST_CHAR = '/^[~=^]$/';
+    private const string REG_THAN_CHAR = '/^[<>]$/';
+
+    /**
+     * Exploded 1character version string
+     *
+     * @var array<int, string> $versionCharacters
+     */
     private array $versionCharacters;
     private ParserState $mode = ParserState::START;
     private string $buffer = '';
     /**
+     * Token array
+     *
      * @var array<int, Token> $tokens
      */
     private array $tokens = [];
 
     /**
+     * Parse string to Tokens
+     *
      * @param string $version
      *
      * @return Tokens
@@ -68,12 +77,12 @@ class Parser
         $this->tokens = [];
     }
 
-    private function next(): string|null
+    private function next(): string
     {
-        return array_shift($this->versionCharacters);
+        return array_shift($this->versionCharacters) ?? '';
     }
 
-    private function transition(string|null $char): bool
+    private function transition(string $char): bool
     {
         return match ($this->mode) {
             ParserState::START => $this->transitionFromStart($char),
@@ -93,8 +102,7 @@ class Parser
     private function pushToken(
         TokenType $type,
         string    $content
-    ): void
-    {
+    ): void {
         $this->tokens[] = new Token(
             $type,
             $content
@@ -102,44 +110,48 @@ class Parser
         $this->buffer = '';
     }
 
-    private function transitionFromStart(?string $char): true
+    private function transitionFromStart(string $char): true
     {
         $this->buffer = '';
-        if (preg_match(
-            self::REG_THAN_CHAR,
-            $char
-        )) {
+        if (
+            preg_match(
+                self::REG_THAN_CHAR,
+                $char
+            )
+        ) {
             $this->mode = ParserState::THAN;
-        } else if (is_numeric($char)) {
+        } elseif (is_numeric($char)) {
             $this->mode = ParserState::VERSION_NUMBER;
-        } else if (preg_match(
-            self::REG_CONSTRAINT_FIRST_CHAR,
-            $char
-        )) {
+        } elseif (
+            preg_match(
+                self::REG_CONSTRAINT_FIRST_CHAR,
+                $char
+            )
+        ) {
             $this->mode = ParserState::CONSTRAINT_CHAR;
         } else {
-            throw new RuntimeException;
+            throw new RuntimeException();
         }
         return true;
     }
 
-    private function transitionFromThan(?string $char): true
+    private function transitionFromThan(string $char): true
     {
         if ($char === '=') {
             $this->mode = ParserState::CONSTRAINT_CHAR;
-        } else if (is_numeric($char)) {
+        } elseif (is_numeric($char)) {
             $this->pushToken(
                 TokenType::CONSTRAINT,
                 $this->buffer
             );
             $this->mode = ParserState::VERSION_NUMBER;
         } else {
-            throw new RuntimeException;
+            throw new RuntimeException();
         }
         return true;
     }
 
-    private function transitionFromConstraintChar(?string $char): true
+    private function transitionFromConstraintChar(string $char): true
     {
         if (is_numeric($char)) {
             $this->pushToken(
@@ -148,12 +160,12 @@ class Parser
             );
             $this->mode = ParserState::VERSION_NUMBER;
         } else {
-            throw new RuntimeException;
+            throw new RuntimeException();
         }
         return true;
     }
 
-    private function transitionFromNumber(?string $char): true
+    private function transitionFromNumber(string $char): true
     {
         if (!is_numeric($char)) {
             if ($char === ' ' || $char === ',') {
@@ -162,57 +174,59 @@ class Parser
                     $this->buffer
                 );
                 $this->mode = ParserState::AND;
-            } else if ($char === '.') {
+            } elseif ($char === '.') {
                 $this->mode = ParserState::VERSION_DOT;
-            } else if ($char === null) {
+            } elseif ($char === '') {
                 $this->pushToken(
                     TokenType::VERSION,
                     $this->buffer
                 );
                 $this->mode = ParserState::END;
             } else {
-                throw new RuntimeException;
+                throw new RuntimeException();
             }
         }
         return true;
     }
 
-    private function transitionFromDot(?string $char): true
+    private function transitionFromDot(string $char): true
     {
         if (is_numeric($char)) {
             $this->mode = ParserState::VERSION_NUMBER;
-        } else if ($char === '*') {
+        } elseif ($char === '*') {
             $this->mode = ParserState::VERSION_ASTERISK;
         } else {
-            throw new RuntimeException;
+            throw new RuntimeException();
         }
         return true;
     }
 
-    private function transitionFromAnd(?string $char): true
+    private function transitionFromAnd(string $char): true
     {
         if ($char === '-') {
             $this->buffer = '';
             $this->mode = ParserState::HYPHEN;
-        } else if ($char === '|') {
+        } elseif ($char === '|') {
             $this->buffer = '';
             $this->mode = ParserState::OR;
-        } else if (preg_match(
-            self::REG_THAN_CHAR,
-            $char
-        )) {
+        } elseif (
+            preg_match(
+                self::REG_THAN_CHAR,
+                $char
+            )
+        ) {
             $this->pushToken(
                 TokenType::AND,
                 ''
             );
             $this->mode = ParserState::THAN;
         } else {
-            throw new RuntimeException;
+            throw new RuntimeException();
         }
         return true;
     }
 
-    private function transitionFromHyphen(?string $char): true
+    private function transitionFromHyphen(string $char): true
     {
         $this->pushToken(
             TokenType::HYPHEN,
@@ -221,26 +235,26 @@ class Parser
         if ($char === ' ') {
             $this->mode = ParserState::SPACE;
         } else {
-            throw new RuntimeException;
+            throw new RuntimeException();
         }
         return true;
     }
 
-    private function transitionFromSpace(?string $char): true
+    private function transitionFromSpace(string $char): true
     {
         if ($char === '|') {
             $this->buffer = '';
             $this->mode = ParserState::OR;
-        } else if (is_numeric($char)) {
+        } elseif (is_numeric($char)) {
             $this->buffer = '';
             $this->mode = ParserState::VERSION_NUMBER;
         } else {
-            throw new RuntimeException;
+            throw new RuntimeException();
         }
         return true;
     }
 
-    private function transitionFromOr(?string $char): true
+    private function transitionFromOr(string $char): true
     {
         if ($char !== '|') {
             if ($this->buffer === '||') {
@@ -251,27 +265,27 @@ class Parser
                 if ($char === ' ') {
                     $this->mode = ParserState::START;
                 } else {
-                    throw new RuntimeException;
+                    throw new RuntimeException();
                 }
             } else {
-                throw new RuntimeException;
+                throw new RuntimeException();
             }
         }
         return true;
     }
 
-    private function transitionFromAsterisk(?string $char): true
+    private function transitionFromAsterisk(string $char): true
     {
         $this->pushToken(
             TokenType::ASTERISK_VERSION,
             $this->buffer
         );
-        if ($char === null) {
+        if ($char === '') {
             $this->mode = ParserState::END;
-        } else if ($char === ' ') {
+        } elseif ($char === ' ') {
             $this->mode = ParserState::SPACE;
         } else {
-            throw new RuntimeException;
+            throw new RuntimeException();
         }
         return true;
     }

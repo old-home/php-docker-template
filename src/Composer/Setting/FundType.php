@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 /**
  * Copyright ©2023 Graywings. All rights reserved.
@@ -12,6 +11,8 @@ declare(strict_types=1);
  * @license  MIT https://opensource.org/licenses/MIT
  * @link     https://github.com/old-home/php-docker-template
  */
+
+declare(strict_types=1);
 
 namespace Graywings\PhpDockerTemplate\Composer\Setting;
 

@@ -3,7 +3,6 @@
 .gitignore export-ignore
 composer.lock export-ignore
 env.template export-ignore
-Makefile export-ignore
 phpdoc.dist.xml export-ignore
 .githooks/ export-ignore
 tests/ export-ignore

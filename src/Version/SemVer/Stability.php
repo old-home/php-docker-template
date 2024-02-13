@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Copyright ©2023 Graywings. All rights reserved.
  *
@@ -13,6 +11,8 @@ declare(strict_types=1);
  * @license  MIT https://opensource.org/licenses/MIT
  * @link     https://github.com/old-home/php-docker-template
  */
+
+declare(strict_types=1);
 
 namespace Graywings\PhpDockerTemplate\Version\SemVer;
 
@@ -34,20 +34,27 @@ use Override;
  *
  * @property-read StabilityType $type
  * @property-read int           $version
+ * @implements    IComparable<Stability>
  */
-final readonly class Stability
-    implements IComparable
+final readonly class Stability implements IComparable
 {
     use Etter;
 
-    const string REGEX = '/^(\D*)?(\d+)?$/';
+    private const string REGEX = '/^(\D*)?(\d+)?$/';
 
+    /**
+     * Stability constructor
+     *
+     * @param StabilityType $type
+     * @param int           $version
+     */
     public function __construct(
         #[Get]
         private StabilityType $type,
         #[Get]
         private int $version
-    ) {}
+    ) {
+    }
 
     /**
      * Parse the given stability string and create a new Stability object.

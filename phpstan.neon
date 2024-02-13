@@ -1,0 +1,6 @@
+parameters:
+    level: max
+    paths:
+        - src
+    ignoreErrors:
+        - "#^Property [a-zA-Z0-9\\\\:\\$]* is never read, only written\\.$#"

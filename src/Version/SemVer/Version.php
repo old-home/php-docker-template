@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Copyright ©2023 Graywings. All rights reserved.
  *
@@ -13,6 +11,8 @@ declare(strict_types=1);
  * @license  MIT https://opensource.org/licenses/MIT
  * @link     https://github.com/old-home/php-docker-template
  */
+
+declare(strict_types=1);
 
 namespace Graywings\PhpDockerTemplate\Version\SemVer;
 
@@ -37,9 +37,9 @@ use Override;
  * @property-read int|null  $patch1
  * @property-read int|null  $patch2
  * @property-read Stability $stability
+ * @implements    IComparable<Version>
  */
-final readonly class Version
-    implements IComparable
+final readonly class Version implements IComparable
 {
     use Etter;
 
@@ -54,7 +54,8 @@ final readonly class Version
         private int|null  $patch2,
         #[Get]
         private Stability $stability
-    ) {}
+    ) {
+    }
 
     public function __clone()
     {
@@ -119,18 +120,19 @@ final readonly class Version
         );
     }
 
-    public function nextSignificant():self {
+    public function nextSignificant(): self
+    {
         $versionNumbers = [];
         foreach (VersionLevel::iterator() as $level) {
             if ($this->lowestLevel()->prior() === $level) {
                 $versionNumbers[] = $this->{$level->value} + 1;
-            } else if (Comparator::lessThanEqual($level, $this->lowestLevel())) {
+            } elseif (Comparator::lessThanEqual($level, $this->lowestLevel())) {
                 if ($this->{$level->value} === null) {
                     $versionNumbers[] = null;
                 } else {
                     $versionNumbers[] = 0;
                 }
-            } else if (Comparator::greaterThan($level, $this->lowestLevel())) {
+            } elseif (Comparator::greaterThan($level, $this->lowestLevel())) {
                 $versionNumbers[] = $this->{$level->value};
             }
         }
@@ -146,7 +148,8 @@ final readonly class Version
         );
     }
 
-    public function nextMajor(): self {
+    public function nextMajor(): self
+    {
         return new Version(
             $this->major + 1,
             $this->minor ? 0 : null,
@@ -193,7 +196,6 @@ final readonly class Version
      * @return int Returns a negative integer if this object is less than the other object,
      *             zero if they are equal, or a positive integer if this object is greater
      *             than the other object.
-     *
      */
     #[Override]
     public function compare(IComparable $other): int
@@ -231,8 +233,7 @@ final readonly class Version
     public function compareVersionParts(
         self         $other,
         VersionLevel $versionLevel
-    ): int
-    {
+    ): int {
         if ($this->{$versionLevel->value} === null) {
             $selfParts = 0;
         } else {

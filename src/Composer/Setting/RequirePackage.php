@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Copyright ©2023 Graywings. All rights reserved.
  *
@@ -13,6 +11,8 @@ declare(strict_types=1);
  * @license  MIT https://opensource.org/licenses/MIT
  * @link     https://github.com/old-home/php-docker-template
  */
+
+declare(strict_types=1);
 
 namespace Graywings\PhpDockerTemplate\Composer\Setting;
 
@@ -27,6 +27,9 @@ use Graywings\Etter\Get;
  * @author   Taira Terashima <taira.terashima@gmail.com>
  * @license  MIT https://opensource.org/licenses/MIT
  * @link     https://github.com/old-home/php-docker-template
+ *
+ * @property-read PackageName $packageName
+ * @property-read string $versionConstraint
  */
 readonly class RequirePackage
 {
@@ -35,7 +38,6 @@ readonly class RequirePackage
     public function __construct(
         #[Get] private PackageName $packageName,
         #[Get] private string $versionConstraint
-    )
-    {
+    ) {
     }
 }

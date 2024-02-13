@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Copyright ©2023 Graywings. All rights reserved.
  *
@@ -14,16 +12,19 @@ declare(strict_types=1);
  * @link     https://github.com/old-home/php-docker-template
  */
 
+declare(strict_types=1);
+
 namespace Graywings\PhpDockerTemplate\Version\SemVer\Constraint;
 
 use Graywings\Etter\Etter;
+use Graywings\PhpDockerTemplate\Comparator\IComparable;
 use Graywings\PhpDockerTemplate\Comparator\Range;
 use Graywings\PhpDockerTemplate\Version\SemVer\Version;
 use Graywings\PhpDockerTemplate\Version\SemVer\VersionLevel;
 use RuntimeException;
 
 /**
- * Version's constraint
+ * Version constraint
  *
  * @category Graywings\PhpDockerTemplate\Version\SemVer\Constraint
  * @package  Graywings\PhpDockerTemplate\Version\SemVer\Constraint
@@ -32,32 +33,35 @@ use RuntimeException;
  * @link     https://github.com/old-home/php-docker-template
  *
  * @property-read Version|null $sup
- * @property-read bool         $supIsMax
+ * @property-read bool $supIsMax
  * @property-read Version|null $inf
- * @property-read bool         $infIsMin
+ * @property-read bool $infIsMin
  */
 class Constraint
 {
     use Etter;
 
     /**
+     * Version Range
+     *
      * @template-use Range<Version>
      */
     use Range;
 
     /**
+     * Constraint constructor
+     *
      * @param Version|null $sup
-     * @param bool         $supIsMax
+     * @param bool $supIsMax
      * @param Version|null $inf
-     * @param bool         $infIsMin
+     * @param bool $infIsMin
      */
     public function __construct(
         Version|null $sup,
         bool         $supIsMax,
         Version|null $inf,
         bool         $infIsMin
-    )
-    {
+    ) {
         $this->sup = $sup;
         $this->supIsMax = $supIsMax;
         $this->inf = $inf;
@@ -65,33 +69,36 @@ class Constraint
     }
 
     /**
+     * Parse single constraint
+     *
      * @param Tokens $tokens
      *
      * @return self
      */
     public static function parse(
         Tokens $tokens
-    ): self
-    {
+    ): self {
         $explodeAnd = $tokens->explode(TokenType::AND);
         if (count($explodeAnd) === 2) {
             return self::parseAnd($explodeAnd);
         }
 
         if (count($explodeAnd) > 2) {
-            throw new RuntimeException;
+            throw new RuntimeException();
         }
         $explodeHyphen = $tokens->explode(TokenType::HYPHEN);
         if (count($explodeHyphen) === 2) {
             return self::parseHyphen($explodeHyphen);
         }
         if (count($explodeHyphen) > 2) {
-            throw new RuntimeException;
+            throw new RuntimeException();
         }
         return self::parseSingleConstraint($tokens);
     }
 
     /**
+     * Combine constraint
+     *
      * @param Constraint $other
      *
      * @return self
@@ -100,11 +107,11 @@ class Constraint
     {
         [
             $sup,
-            $supIsMax
+            $supIsMax,
         ] = $this->extractSup($other);
         [
             $inf,
-            $infIsMin
+            $infIsMin,
         ] = $this->extractInf($other);
 
         return new self(
@@ -115,16 +122,23 @@ class Constraint
         );
     }
 
+    /**
+     * Extract sup
+     *
+     * @param  Constraint $other
+     * @return array{
+     *     0: ?Version,
+     *     1: bool
+     * }
+     */
     private function extractSup(self $other): array
     {
-        if (
-            $this->sup === null && $other->sup === null
-        ) {
-            throw new RuntimeException;
+        if ($this->sup === null && $other->sup === null) {
+            throw new RuntimeException();
         }
 
         if ($this->sup === null) {
-            $sup = clone $other->sup;
+            $sup = $other->sup === null ? null : clone $other->sup;
             $supIsMax = $other->supIsMax;
         } else {
             $sup = clone $this->sup;
@@ -133,19 +147,26 @@ class Constraint
 
         return [
             $sup,
-            $supIsMax
+            $supIsMax,
         ];
     }
 
+    /**
+     * Extract Inf
+     *
+     * @param  Constraint $other
+     * @return array{
+     *     0: ?Version,
+     *     1: bool
+     * }
+     */
     private function extractInf(self $other): array
     {
-        if (
-            $this->inf === null && $other->inf === null
-        ) {
-            throw new RuntimeException;
+        if ($this->inf === null && $other->inf === null) {
+            throw new RuntimeException();
         }
         if ($this->inf === null) {
-            $inf = clone $other->inf;
+            $inf = $other->inf === null ? null : clone $other->inf;
             $infIsMin = $other->infIsMin;
         } else {
             $inf = clone $this->inf;
@@ -154,11 +175,13 @@ class Constraint
 
         return [
             $inf,
-            $infIsMin
+            $infIsMin,
         ];
     }
 
     /**
+     * Parse AND expression
+     *
      * @param array<int, Tokens> $explodeAnd
      *
      * @return self
@@ -170,6 +193,8 @@ class Constraint
     }
 
     /**
+     * Parse HYPHEN expression
+     *
      * @param array<int, Tokens> $explodeHyphen
      *
      * @return self
@@ -186,6 +211,12 @@ class Constraint
         );
     }
 
+    /**
+     * Parse Single constraint
+     *
+     * @param  Tokens $tokens
+     * @return self
+     */
     private static function parseSingleConstraint(Tokens $tokens): self
     {
         $constraintType = $tokens->values[0]->type;
@@ -205,11 +236,13 @@ class Constraint
             );
         }
         // @codeCoverageIgnoreStart
-        throw new RuntimeException;
+        throw new RuntimeException();
         // @codeCoverageIgnoreEnd
     }
 
     /**
+     * Build constraint object
+     *
      * @param Tokens $tokens
      *
      * @return self
@@ -249,10 +282,16 @@ class Constraint
                 Version::parse($tokens->values[1]->contents),
                 true
             ),
-            default => throw new RuntimeException,
+            default => throw new RuntimeException(),
         };
     }
 
+    /**
+     * Parse CARET expression
+     *
+     * @param  Tokens $tokens
+     * @return self
+     */
     private static function parseCaret(Tokens $tokens): self
     {
         $value = Version::parse($tokens->values[1]->contents);
@@ -272,11 +311,17 @@ class Constraint
         );
     }
 
+    /**
+     * Parse TILDE expression
+     *
+     * @param  Tokens $tokens
+     * @return self
+     */
     private static function parseTilde(Tokens $tokens): self
     {
         $value = Version::parse($tokens->values[1]->contents);
         if ($value->lowestLevel() === VersionLevel::MAJOR) {
-            throw new RuntimeException;
+            throw new RuntimeException();
         }
         return new self(
             $value->nextSignificant(),
@@ -286,6 +331,12 @@ class Constraint
         );
     }
 
+    /**
+     * Parse ASTERISK expression
+     *
+     * @param  Tokens $tokens
+     * @return self
+     */
     private static function parseAsterisk(Tokens $tokens): self
     {
         $asteriskVersion = $tokens->values[0]->contents;

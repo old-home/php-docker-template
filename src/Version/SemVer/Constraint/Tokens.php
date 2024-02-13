@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Copyright ©2024 Graywings. All rights reserved.
  *
@@ -13,6 +11,8 @@ declare(strict_types=1);
  * @license  MIT https://opensource.org/licenses/MIT
  * @link     https://github.com/old-home/php-docker-template
  */
+
+declare(strict_types=1);
 
 namespace Graywings\PhpDockerTemplate\Version\SemVer\Constraint;
 
@@ -35,14 +35,19 @@ class Tokens
     use Etter;
 
     /**
+     * Tokens constructor
+     *
      * @param array<int, Token> $values
      */
     public function __construct(
         #[Get]
         private array $values
-    ) {}
+    ) {
+    }
 
     /**
+     * Explode tokens by TokenType
+     *
      * @param TokenType $type
      *
      * @return array<int, self>

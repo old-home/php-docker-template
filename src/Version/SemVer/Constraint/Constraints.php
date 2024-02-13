@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Copyright ©2024 Graywings. All rights reserved.
  *
@@ -13,6 +11,8 @@ declare(strict_types=1);
  * @license  MIT https://opensource.org/licenses/MIT
  * @link     https://github.com/old-home/php-docker-template
  */
+
+declare(strict_types=1);
 
 namespace Graywings\PhpDockerTemplate\Version\SemVer\Constraint;
 
@@ -36,14 +36,19 @@ class Constraints
     use Etter;
 
     /**
+     * Constraints constructor
+     *
      * @param array<int, Constraint> $values
      */
     public function __construct(
         #[Get]
         private readonly array $values
-    ) {}
+    ) {
+    }
 
     /**
+     * Parse version constraint string
+     *
      * @param string $versionConstraint
      *
      * @return self
@@ -51,7 +56,7 @@ class Constraints
     public static function parse(
         string $versionConstraint
     ): self {
-        $parser = new Parser;
+        $parser = new Parser();
         $tokens = $parser->parse($versionConstraint);
         $tokensArray = $tokens->explode(TokenType::OR);
         $constraints = [];
@@ -64,7 +69,7 @@ class Constraints
     public function contains(Version $version): bool
     {
         $result = false;
-        foreach($this->values as $value) {
+        foreach ($this->values as $value) {
             $result = $result || $value->contains($version);
         }
         return $result;

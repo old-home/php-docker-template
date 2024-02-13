@@ -6,9 +6,11 @@ use Dotenv\Dotenv;
 use Graywings\PhpDockerTemplate\Composer\Setting\Author;
 use Graywings\PhpDockerTemplate\Composer\Setting\PackageName;
 use Graywings\PhpDockerTemplate\Composer\Setting\PackageType;
+use Graywings\PhpDockerTemplate\Composer\Setting\RequirePackage;
 use Graywings\PhpDockerTemplate\Composer\Setting\Setting;
 use Graywings\PhpDockerTemplate\Composer\Setting\SoftwareLicense;
 use Graywings\PhpDockerTemplate\Version\SemVer\StabilityType;
+use Graywings\PhpDockerTemplate\Version\SemVer\Version;
 
 require_once 'vendor/autoload.php';
 
@@ -46,6 +48,7 @@ if (!function_exists('main')) {
             buildPackagistRepository($packageName);
             setGitHubWebhook($packageName);
             system('composer dump-autoload');
+            unlink('README.md');
         } catch (RuntimeException $e) {
             echo $e->getMessage();
             require __FILE__;
@@ -203,9 +206,8 @@ curl -L \
   -H "Authorization: Bearer $token" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
   https://api.github.com/repos/$organizationOrUser/$repositoryName/hooks \
-  -d '{"name":"web", "active": true, "events": ["push", "pull_request"], "config": {"url": "https://packagist.org/api/github", "content_type": "json", "insecure_ssl": "0"}}'
-EOF
-        );
+  -d '{"name":"web","active":true,"events":["push", "pull_request"],"config":{"url":"https://packagist.org/api/github","content_type":"json","insecure_ssl":"0"}}'
+EOF);
     }
 }
 
@@ -239,18 +241,7 @@ if (!function_exists('buildComposerJson')) {
         $setting = new Setting(
             $packageName,
             $description,
-            $packageType,
-            $license,
-            $keywords,
-            '',
-            '',
-            '',
-            [$author],
-            [],
-            [],
-            [],
-            [],
-            $minimumStability
+            []
         );
         file_put_contents(
             'composer.json',

@@ -8,7 +8,7 @@ declare(strict_types=1);
  *
  * @category Graywings\PhpDockerTemplate\Tests\Features\Version\SemVer
  * @package  Graywings\PhpDockerTemplate\Tests\Features\Version\SemVer
- * @author   ${USER_NAME} <${EMAIL}>
+ * @author   Taira Terashima <taira.terashima@gmail.com>
  * @license  MIT https://opensource.org/licenses/MIT
  * @link     https://github.com/old-home/php-docker-template
  */

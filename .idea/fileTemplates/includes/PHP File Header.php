@@ -1,4 +1,3 @@
-declare(strict_types=1);
 
 /**
  * Copyright ©${YEAR} Graywings. All rights reserved.
@@ -13,3 +12,5 @@ declare(strict_types=1);
  * @license  MIT https://opensource.org/licenses/MIT
  * @link     https://github.com/old-home/${PROJECT_NAME}
  */
+ 
+declare(strict_types=1);

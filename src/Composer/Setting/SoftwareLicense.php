@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 /**
  * Copyright ©2023 Graywings. All rights reserved.
@@ -13,7 +12,13 @@ declare(strict_types=1);
  * @link     https://github.com/old-home/php-docker-template
  */
 
+declare(strict_types=1);
+
 namespace Graywings\PhpDockerTemplate\Composer\Setting;
+
+use JsonSerializable;
+use Override;
+use PHPUnit\Util\Json;
 
 /**
  * Software License
@@ -24,7 +29,7 @@ namespace Graywings\PhpDockerTemplate\Composer\Setting;
  * @license  MIT https://opensource.org/licenses/MIT
  * @link     https://github.com/old-home/php-docker-template
  */
-enum SoftwareLicense: string
+enum SoftwareLicense: string implements JsonSerializable
 {
     case MIT = 'MIT';
     case BSD = 'BSD';
@@ -36,4 +41,10 @@ enum SoftwareLicense: string
     case CC_0_1_0 = 'CC0.1.0';
     case PUBLIC_DOMAIN = 'Public Domain';
     case PROPRIETARY = 'Proprietary';
+
+    #[Override]
+    public function jsonSerialize(): string
+    {
+        return $this->value;
+    }
 }

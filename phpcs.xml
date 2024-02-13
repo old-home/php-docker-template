@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<ruleset xmlns="TPF-Format">
+    <arg name="extensions" value="php" />
+    <arg value="ps" />
+    <rule ref="PSR12" />
+    <rule ref="PEAR.WhiteSpace.ObjectOperatorIndent" />
+    <rule ref="Generic.Arrays.ArrayIndent" />
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax" />
+    <rule ref="Generic.CodeAnalysis.AssignmentInCondition" />
+    <rule ref="Generic.CodeAnalysis.UnconditionalIfStatement">
+        <!-- PHPCS recognize constant type is parameter name -->
+        <exclude name="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase" />
+    </rule>
+
+    <rule ref="Generic.ControlStructures.DisallowYodaConditions" />
+    <rule ref="Generic.PHP.DeprecatedFunctions" />
+    <rule ref="Generic.Commenting.DocComment">
+        <exclude name="Generic.Commenting.DocComment.NonParamGroup" />
+    </rule>
+    <rule ref="Squiz.NamingConventions.ValidVariableName">
+        <exclude name="Squiz.NamingConventions.ValidVariableName.PrivateNoUnderscore" />
+    </rule>
+    <rule ref="Squiz.Operators.ValidLogicalOperators" />
+    <rule ref="Squiz.WhiteSpace.FunctionSpacing">
+        <properties>
+            <property name="spacing" value="1" />
+            <property name="spacingBeforeFirst" value="0" />
+            <property name="spacingAfterLast" value="0" />
+        </properties>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.SemicolonSpacing" />
+    <rule ref="Squiz.Strings.DoubleQuoteUsage" />
+    <rule ref="Squiz.Arrays.ArrayDeclaration">
+        <exclude name="Squiz.Arrays.ArrayDeclaration.KeyNotAligned" />
+        <exclude name="Squiz.Arrays.ArrayDeclaration.ValueNotAligned" />
+        <exclude name="Squiz.Arrays.ArrayDeclaration.MultiLineNotAllowed" />
+        <exclude name="Squiz.Arrays.ArrayDeclaration.NoComma" />
+        <exclude name="Squiz.Arrays.ArrayDeclaration.CloseBraceNotAligned" />
+        <exclude name="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned" />
+    </rule>
+    <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterHint">
+        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterHint" />
+    </rule>
+</ruleset>
