@@ -1,0 +1,15 @@
+  name: Feature Request
+  description: Suggest some feature.
+  body:
+    - type: input
+      attributes:
+        label: Feature Title
+        description: Give an overview of the feature.
+      validations:
+        required: true
+    - type: textarea
+      attributes:
+        label: Detail
+        description: Describe the feature detail.
+      validations:
+        required: true
