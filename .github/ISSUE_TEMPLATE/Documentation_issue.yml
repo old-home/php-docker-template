@@ -3,12 +3,6 @@
   body:
     - type: input
       attributes:
-        label: Fix title
-        description: Outline the fixes.
-      validations:
-        required: true
-    - type: input
-      attributes:
         label: Fix file
         description: Specify the path to the file to be fixed.
       validations:
