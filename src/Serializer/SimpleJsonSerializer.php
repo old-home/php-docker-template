@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Graywings\PhpDockerTemplate\Serializer;
 
 use Exception;
+use Graywings\PhpDockerTemplate\Serializer\Exception\NonSerializableException;
 use Graywings\PhpDockerTemplate\Str\CaseType;
 use Graywings\PhpDockerTemplate\Str\Str;
 use ReflectionClass;
@@ -73,7 +74,7 @@ trait SimpleJsonSerializer
                 if ($reflectionProperty->isInitialized()) {
                     $propertyType = $reflectionProperty->getType();
                     if ($propertyType === null) {
-                        throw new Exception();
+                        throw new NonSerializableException('Not specified property can\'t serialize.');
                     }
                     if (is_a($propertyType, ReflectionNamedType::class)) {
                         if (!$propertyType->isBuiltin()) {
@@ -82,7 +83,7 @@ trait SimpleJsonSerializer
                             $ret[$kebabName] = $this->${$reflectionProperty->name}->jsonSerialize();
                         }
                     } else {
-                        throw new Exception();
+                        throw new NonSerializableException('Union type and intersection type can\'t serialize.');
                     }
                 }
             }

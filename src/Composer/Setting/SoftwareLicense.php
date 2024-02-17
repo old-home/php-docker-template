@@ -18,7 +18,6 @@ namespace Graywings\PhpDockerTemplate\Composer\Setting;
 
 use JsonSerializable;
 use Override;
-use PHPUnit\Util\Json;
 
 /**
  * Software License

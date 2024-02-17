@@ -16,10 +16,8 @@ declare(strict_types=1);
 
 namespace Graywings\PhpDockerTemplate\Exception;
 
-use LogicException;
-
 /**
- * Not implemented exception
+ * Root exception in graywings project
  *
  * @category Graywings\PhpDockerTemplate\Exception
  * @package  Graywings\PhpDockerTemplate\Exception
@@ -27,6 +25,6 @@ use LogicException;
  * @license  MIT https://opensource.org/licenses/MIT
  * @link     https://github.com/old-home/php-docker-template
  */
-class NotImplementedException extends LogicException
+interface Exception
 {
 }

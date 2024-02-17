@@ -17,7 +17,7 @@ declare(strict_types=1);
 namespace Graywings\PhpDockerTemplate\Comparator;
 
 use Graywings\PhpDockerTemplate\Collection\Collection;
-use Graywings\PhpDockerTemplate\Exception\NotImplementedException;
+use Graywings\PhpDockerTemplate\Exception\LogicException\NotImplementedException;
 
 /**
  * Sort

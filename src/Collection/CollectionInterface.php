@@ -17,7 +17,6 @@ declare(strict_types=1);
 namespace Graywings\PhpDockerTemplate\Collection;
 
 use Graywings\PhpDockerTemplate\Comparator\SortOrder;
-use ReturnTypeWillChange;
 
 /**
  * Collection interface
