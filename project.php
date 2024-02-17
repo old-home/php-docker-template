@@ -39,8 +39,7 @@ if (!function_exists('main')) {
                 $author,
                 $minimumStability,
                 $packageType,
-                $license,
-                $keywords
+                $license
             );
             moveGitAttributes();
             unlink(__FILE__);
@@ -235,19 +234,61 @@ if (!function_exists('buildComposerJson')) {
         Author          $author,
         StabilityType   $minimumStability,
         PackageType     $packageType,
-        SoftwareLicense $license,
-        array           $keywords
+        SoftwareLicense $license
     ): void
     {
-        $setting = new Setting(
-            $packageName,
-            $description,
-            []
-        );
         file_put_contents(
             'composer.json',
             json_encode(
-                $setting->jsonSerialize(),
+                [
+                    'name' => $packageName->projectName(),
+                    'description' => $description,
+                    'type' => $packageType->value,
+                    'license' => $license->value,
+                    'authors' => [
+                        [
+                            'name' => $author->userName,
+                            'email' => $author->email
+                        ]
+                    ],
+                    'minimum-stability' => $minimumStability->value,
+                    'required-dev' => [
+                        'phpunit/phpunit' => '^10.3',
+                        'squizlabs/php_codesniffer' => '^3.8',
+                        'phpstan/phpstan' => '^1.10'
+                    ],
+                    'autoload' => [
+                        'psr-4' => [
+                            $packageName->namespaceName() . '\\' => 'src/'
+                        ]
+                    ],
+                    'autoload-dev' => [
+                        'psr-4' => [
+                            $packageName->namespaceName() . '\\Tests\\Unit\\' => 'tests/Unit',
+                            $packageName->namespaceName() . '\\Tests\\Feature\\' => 'tests/Feature',
+                        ]
+                    ],
+                    'scripts' => [
+                        'build' => [
+                            '@test',
+                            '@lint'
+                        ],
+                        'test' => [
+                            '@test:units',
+                            '@test:features'
+                        ],
+                        'test:units' => 'phpunit --testsuite units --coverage-html=coverage',
+                        'test:features' => 'phpunit --testsuite features',
+                        'lint' => [
+                            '@lint:fix',
+                            '@lint:phpcs',
+                            '@lint:phpstan'
+                        ],
+                        '@lint:fix' => 'phpcbf src/',
+                        '@lint:phpcs' => 'phpcs src/',
+                        '@lint:phpstan' => 'phpstan'
+                    ]
+                ],
                 JSON_UNESCAPED_SLASHES |
                 JSON_UNESCAPED_SLASHES |
                 JSON_UNESCAPED_LINE_TERMINATORS |
