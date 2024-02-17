@@ -68,7 +68,7 @@ if (!function_exists('readInput')) {
         echo $prompt . "\n";
         $input = fgets(STDIN);
         if ($input === false) {
-            // XXX: If Console module separated. use ConsoleException
+            //TODO: If Console module separated. use ConsoleException
             throw new RuntimeException('Can\'t read STDIN.');
         }
         return trim($input);
