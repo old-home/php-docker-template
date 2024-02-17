@@ -20,6 +20,7 @@ use ArrayIterator;
 use Exception;
 use Graywings\Etter\Etter;
 use Graywings\Etter\Get;
+use Graywings\PhpDockerTemplate\Collection\Exception\ReadonlyCollectionChangeException;
 use Graywings\PhpDockerTemplate\Comparator\SortOrder;
 use Override;
 use ReflectionClass;
@@ -99,13 +100,14 @@ abstract readonly class ReadonlyCollection implements CollectionInterface
      * @param  integer $offset
      * @param  T $value
      * @return void
+     * @throws ReadonlyCollectionChangeException
      */
     #[Override]
     public function offsetSet(
         mixed $offset,
         mixed $value
     ): void {
-        throw new Exception();
+        $this->throwReadonlyCollectionException(__METHOD__);
     }
 
     /**
@@ -113,12 +115,13 @@ abstract readonly class ReadonlyCollection implements CollectionInterface
      *
      * @param  integer $offset
      * @return void
+     * @throws ReadonlyCollectionChangeException
      */
     #[Override]
     public function offsetUnset(
         mixed $offset
     ): void {
-        throw new Exception();
+        $this->throwReadonlyCollectionException(__METHOD__);
     }
 
     /**
@@ -143,10 +146,16 @@ abstract readonly class ReadonlyCollection implements CollectionInterface
         return new ArrayIterator($this->elements);
     }
 
+    /**
+     * Clear collection
+     *
+     * @return void
+     * @throws ReadonlyCollectionChangeException
+     */
     #[Override]
     public function clear(): void
     {
-        throw new Exception();
+        $this->throwReadonlyCollectionException(__METHOD__);
     }
 
     #[Override]
@@ -161,10 +170,17 @@ abstract readonly class ReadonlyCollection implements CollectionInterface
         return empty($this->elements);
     }
 
+    /**
+     * Add element
+     *
+     * @param  T $element
+     * @return bool
+     * @throws ReadonlyCollectionChangeException
+     */
     #[Override]
     public function add(mixed $element): bool
     {
-        throw new Exception();
+        $this->throwReadonlyCollectionException(__METHOD__);
     }
 
     #[Override]
@@ -179,11 +195,18 @@ abstract readonly class ReadonlyCollection implements CollectionInterface
         return $this->typeName;
     }
 
+    /**
+     * Remove element
+     *
+     * @param  T $element
+     * @return bool
+     * @throws ReadonlyCollectionChangeException
+     */
     #[Override]
     public function remove(
         mixed $element
     ): bool {
-        throw new Exception();
+        $this->throwReadonlyCollectionException(__METHOD__);
     }
 
     #[Override]
@@ -370,6 +393,23 @@ abstract readonly class ReadonlyCollection implements CollectionInterface
                 $this->elements,
                 $merged
             )
+        );
+    }
+
+    /**
+     * Throw Readonly collection exception
+     *
+     * @param  string $methodName
+     * @return never-return
+     * @throws ReadonlyCollectionChangeException
+     */
+    private function throwReadonlyCollectionException(
+        string $methodName
+    ): void {
+        throw new ReadonlyCollectionChangeException(
+            'The method ' . $methodName . ' involves a change of object.' .
+            static::class . ' is extends ' . self::class .
+            'Can\'t change.'
         );
     }
 }

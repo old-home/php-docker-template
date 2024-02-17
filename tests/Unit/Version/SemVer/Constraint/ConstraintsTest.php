@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Graywings\PhpDockerTemplate\Tests\Unit\Version\SemVer\Constraint;
 
 use Graywings\PhpDockerTemplate\Comparator\Comparator;
+use Graywings\PhpDockerTemplate\Exception\LogicException\DomainException;
 use Graywings\PhpDockerTemplate\Version\SemVer\Constraint\Constraint;
 use Graywings\PhpDockerTemplate\Version\SemVer\Constraint\Constraints;
 use Graywings\PhpDockerTemplate\Version\SemVer\Constraint\Parser;
@@ -200,13 +201,13 @@ class ConstraintsTest
 
     public function testDoubleAndConstraint(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(DomainException::class);
         Constraints::parse('>1.0.0 >=2.0.0 <2.5.2');
     }
 
     public function testDoubleHyphenConstraint(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(DomainException::class);
         Constraints::parse('1 - 2 - 3');
     }
 

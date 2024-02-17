@@ -30,7 +30,7 @@ use Graywings\Etter\Get;
  *
  * @property-read array<int, Token> $values
  */
-class Tokens
+readonly class Tokens
 {
     use Etter;
 

@@ -17,8 +17,9 @@ declare(strict_types=1);
 namespace Graywings\PhpDockerTemplate\Version\SemVer\Constraint;
 
 use Graywings\Etter\Etter;
-use Graywings\PhpDockerTemplate\Comparator\IComparable;
 use Graywings\PhpDockerTemplate\Comparator\Range;
+use Graywings\PhpDockerTemplate\Exception\LogicException\DomainException;
+use Graywings\PhpDockerTemplate\Exception\RuntimeException\UnexpectedValueException;
 use Graywings\PhpDockerTemplate\Version\SemVer\Version;
 use Graywings\PhpDockerTemplate\Version\SemVer\VersionLevel;
 use RuntimeException;
@@ -84,14 +85,18 @@ class Constraint
         }
 
         if (count($explodeAnd) > 2) {
-            throw new RuntimeException();
+            throw new DomainException(
+                'No more than 2 AND expression( ) can\'t be used at the same single constraint.'
+            );
         }
         $explodeHyphen = $tokens->explode(TokenType::HYPHEN);
         if (count($explodeHyphen) === 2) {
             return self::parseHyphen($explodeHyphen);
         }
         if (count($explodeHyphen) > 2) {
-            throw new RuntimeException();
+            throw new DomainException(
+                'No more than 2 HYPHEN expression(-) can\'t be used at the same single constraint.'
+            );
         }
         return self::parseSingleConstraint($tokens);
     }
@@ -134,7 +139,9 @@ class Constraint
     private function extractSup(self $other): array
     {
         if ($this->sup === null && $other->sup === null) {
-            throw new RuntimeException();
+            throw new UnexpectedValueException(
+                'Neither of the extractSup methods can be applied if the sup property is null.'
+            );
         }
 
         if ($this->sup === null) {
@@ -163,7 +170,9 @@ class Constraint
     private function extractInf(self $other): array
     {
         if ($this->inf === null && $other->inf === null) {
-            throw new RuntimeException();
+            throw new UnexpectedValueException(
+                'Neither of the extractInf methods can be applied if the inf property is null.'
+            );
         }
         if ($this->inf === null) {
             $inf = $other->inf === null ? null : clone $other->inf;
@@ -236,7 +245,7 @@ class Constraint
             );
         }
         // @codeCoverageIgnoreStart
-        throw new RuntimeException();
+        throw new UnexpectedValueException('Unexpected tokens parsed.');
         // @codeCoverageIgnoreEnd
     }
 
@@ -282,7 +291,7 @@ class Constraint
                 Version::parse($tokens->values[1]->contents),
                 true
             ),
-            default => throw new RuntimeException(),
+            default => throw new DomainException('Undefined expression used.')
         };
     }
 
@@ -321,7 +330,7 @@ class Constraint
     {
         $value = Version::parse($tokens->values[1]->contents);
         if ($value->lowestLevel() === VersionLevel::MAJOR) {
-            throw new RuntimeException();
+            throw new UnexpectedValueException('TILDE expression can\'t be applied only major Version object.');
         }
         return new self(
             $value->nextSignificant(),

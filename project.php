@@ -6,11 +6,11 @@ use Dotenv\Dotenv;
 use Graywings\PhpDockerTemplate\Composer\Setting\Author;
 use Graywings\PhpDockerTemplate\Composer\Setting\PackageName;
 use Graywings\PhpDockerTemplate\Composer\Setting\PackageType;
-use Graywings\PhpDockerTemplate\Composer\Setting\RequirePackage;
 use Graywings\PhpDockerTemplate\Composer\Setting\Setting;
 use Graywings\PhpDockerTemplate\Composer\Setting\SoftwareLicense;
+use Graywings\PhpDockerTemplate\Exception\LogicException\LogicException;
+use Graywings\PhpDockerTemplate\Exception\RuntimeException\RuntimeException;
 use Graywings\PhpDockerTemplate\Version\SemVer\StabilityType;
-use Graywings\PhpDockerTemplate\Version\SemVer\Version;
 
 require_once 'vendor/autoload.php';
 
@@ -69,7 +69,8 @@ if (!function_exists('readInput')) {
         echo $prompt . "\n";
         $input = fgets(STDIN);
         if ($input === false) {
-            throw new LogicException('Can\'t read STDIN.');
+            // XXX: If Console module separated. use ConsoleException
+            throw new RuntimeException('Can\'t read STDIN.');
         }
         return trim($input);
     }

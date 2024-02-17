@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace Graywings\Exception;
 
-use ErrorException;
+use Graywings\PhpDockerTemplate\Exception\ErrorException;
 
 if (!function_exists('Graywings\Exception\initErrorHandler')) {
     /**
@@ -25,19 +25,22 @@ if (!function_exists('Graywings\Exception\initErrorHandler')) {
      */
     function initErrorHandler(): void
     {
-        set_error_handler(callback: function (
-            int $severity,
-            string $message,
-            string $file,
-            int $line
-        ): bool|callable {
-            throw new ErrorException(
-                $message,
-                0,
-                $severity,
-                $file,
-                $line
-            );
-        });
+        set_error_handler(
+            callback: function (
+                int $severity,
+                string $message,
+                string $file,
+                int $line
+            ): bool|callable {
+                throw new ErrorException(
+                    $message,
+                    0,
+                    $severity,
+                    $file,
+                    $line
+                );
+            },
+            error_levels: E_ALL
+        );
     }
 }
